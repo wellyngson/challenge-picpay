@@ -29,7 +29,7 @@ class UserRepositoryImpl @Inject constructor(
     }
 
     private fun addOrUpdateUsersInLocalDataSource(user: User) {
-        if (userLocalDataSource.getUsersLocalDataSource().contains(user)) {
+        if (getListUserInLocalDataSource().contains(user)) {
             userLocalDataSource.updateUserLocalDataSource(user)
         } else {
             userLocalDataSource.addUserLocalDataSource(user)

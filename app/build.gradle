@@ -91,6 +91,26 @@ dependencies {
     // Coroutines
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.0'
+    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0'
+
+    // Mockk
+    testImplementation "io.mockk:mockk:1.12.2"
+
+    // Mockito
+    testImplementation "org.mockito:mockito-core:4.0.0"
+    testImplementation 'com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0'
+
+    // Power Mock
+    testImplementation 'org.powermock:powermock-api-mockito2:2.0.7'
+    testImplementation 'org.powermock:powermock-module-junit4-rule-agent:2.0.7'
+    testImplementation 'org.powermock:powermock-module-junit4-rule:2.0.7'
+    testImplementation 'org.powermock:powermock-module-junit4:2.0.7'
+
+    // Truth
+    testImplementation 'androidx.test.ext:truth:1.4.0'
+
+    // Faker
+    implementation 'io.github.serpro69:kotlin-faker:1.8.0'
 
     testImplementation 'junit:junit:4.13.2'
 
