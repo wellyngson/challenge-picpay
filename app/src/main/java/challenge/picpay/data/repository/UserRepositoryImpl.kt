@@ -4,17 +4,19 @@ import challenge.picpay.data.model.User
 import challenge.picpay.data.model.UserState
 import challenge.picpay.data.repository.datasource.local.UserLocalDataSource
 import challenge.picpay.data.repository.datasource.remote.UserRemoteDataSource
+import challenge.picpay.di.IoDispatcher
 import challenge.picpay.utils.CacheExtensions.Companion.shouldGetDataInCache
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class UserRepositoryImpl @Inject constructor(
     private val userRemoteDataSource: UserRemoteDataSource,
-    private val userLocalDataSource: UserLocalDataSource
+    private val userLocalDataSource: UserLocalDataSource,
+    @IoDispatcher private val dispatcher: CoroutineDispatcher,
 ) : UserRepository {
 
-    override suspend fun getAllUser(): UserState = withContext(Dispatchers.IO) {
+    override suspend fun getAllUser(): UserState = withContext(dispatcher) {
         try {
             if (!shouldGetDataInCache()) {
                 userRemoteDataSource.getUsersRemoteDataSource().map {
