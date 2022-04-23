@@ -1,19 +1,17 @@
 package challenge.picpay.ui.home
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.asLiveData
 import challenge.picpay.data.model.User
 import challenge.picpay.data.model.UserState
 import challenge.picpay.databinding.FragmentHomeBinding
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
 
 @AndroidEntryPoint
 class HomeFragment : Fragment() {
@@ -35,10 +33,6 @@ class HomeFragment : Fragment() {
 
         setupAdapter()
         setupUsersObserver()
-
-        viewBinding.get.setOnClickListener {
-            viewModel.getUsers()
-        }
     }
 
     private fun setupAdapter() {
@@ -46,23 +40,19 @@ class HomeFragment : Fragment() {
     }
 
     private fun setupUsersObserver() {
-        lifecycleScope.launchWhenStarted {
-            viewModel.users.collect {
-                when (it) {
-                    is UserState.Initial -> {
-                    }
-                    is UserState.Loading -> {
-                        viewBinding.loading.isVisible = true
-                    }
-                    is UserState.Loaded -> {
-                        viewBinding.loading.isVisible = false
-                        updateAdapter(it.users)
-
-                        Log.d("getInCache", it.users.toString())
-                    }
-                    is UserState.Failed -> {
-                        viewBinding.loading.isVisible = false
-                    }
+        viewModel.users.asLiveData().observe(viewLifecycleOwner) {
+            when (it) {
+                is UserState.Initial -> {
+                }
+                is UserState.Loading -> {
+                    viewBinding.loading.isVisible = true
+                }
+                is UserState.Loaded -> {
+                    viewBinding.loading.isVisible = false
+                    updateAdapter(it.users)
+                }
+                is UserState.Failed -> {
+                    viewBinding.loading.isVisible = false
                 }
             }
         }
