@@ -53,7 +53,6 @@ class UserRepositoryImplTest {
             // when
             mockkObject(CacheExtensions)
             every { CacheExtensions.shouldGetDataInCache() } returns false
-            coEvery { userRemoteDataSource.getUsersRemoteDataSource() }
             userRepository.getAllUser()
 
             // the

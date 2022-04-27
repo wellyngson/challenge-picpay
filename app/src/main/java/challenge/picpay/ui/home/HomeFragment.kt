@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.asLiveData
 import challenge.picpay.data.model.User
 import challenge.picpay.data.model.UserState
 import challenge.picpay.databinding.FragmentHomeBinding
@@ -33,6 +32,7 @@ class HomeFragment : Fragment() {
 
         setupAdapter()
         setupUsersObserver()
+        setupTryAgain()
     }
 
     private fun setupAdapter() {
@@ -40,22 +40,59 @@ class HomeFragment : Fragment() {
     }
 
     private fun setupUsersObserver() {
-        viewModel.users.asLiveData().observe(viewLifecycleOwner) {
+        viewModel.users.observe(viewLifecycleOwner) {
             when (it) {
                 is UserState.Initial -> {
                 }
                 is UserState.Loading -> {
-                    viewBinding.loading.isVisible = true
+                    setupUserStateLoading()
                 }
                 is UserState.Loaded -> {
-                    viewBinding.loading.isVisible = false
-                    updateAdapter(it.users)
+                    setupUserStateLoaded(it)
                 }
                 is UserState.Failed -> {
-                    viewBinding.loading.isVisible = false
+                    setupUserStateFailed(it.users)
                 }
             }
         }
+    }
+
+    private fun setupUserStateLoading() {
+        errorContainerVisibility(false)
+        showLoading()
+    }
+
+    private fun setupUserStateLoaded(it: UserState.Loaded) {
+        dismissLoading()
+        updateAdapter(it.users)
+    }
+
+    private fun setupUserStateFailed(users: List<User>) {
+        errorContainerVisibility(true)
+        dismissLoading()
+
+        if (users.isNotEmpty()) {
+            errorContainerVisibility(false)
+            updateAdapter(users)
+        }
+    }
+
+    private fun setupTryAgain() {
+        viewBinding.tryAgain.setOnClickListener {
+            viewModel.getUsers()
+        }
+    }
+
+    private fun dismissLoading() {
+        viewBinding.loading.isVisible = false
+    }
+
+    private fun errorContainerVisibility(value: Boolean) {
+        viewBinding.errorContainer.isVisible = value
+    }
+
+    private fun showLoading() {
+        viewBinding.loading.isVisible = true
     }
 
     private fun updateAdapter(users: List<User>) {

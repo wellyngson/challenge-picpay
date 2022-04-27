@@ -18,13 +18,17 @@ class UserRepositoryImpl @Inject constructor(
 
     override suspend fun getAllUser(): UserState = withContext(dispatcher) {
         try {
-            if (!shouldGetDataInCache()) {
-                userRemoteDataSource.getUsersRemoteDataSource().map {
+            if (shouldGetDataInCache() && getListUserInLocalDataSource().isNotEmpty()) {
+                UserState.Loaded(getListUserInLocalDataSource())
+            } else {
+                val response = userRemoteDataSource.getUsersRemoteDataSource()
+
+                response.map {
                     addOrUpdateUsersInLocalDataSource(it)
                 }
-            }
 
-            UserState.Loaded(getListUserInLocalDataSource())
+                UserState.Loaded(response)
+            }
         } catch (e: Exception) {
             UserState.Failed(getListUserInLocalDataSource(), e)
         }

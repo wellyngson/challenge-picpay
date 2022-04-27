@@ -3,8 +3,10 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/welly/StudioProjects/PicPay/app/src/main/res/drawable/background_button_reload.xml" value="0.1165" />
         <entry key="..\:/Users/welly/StudioProjects/PicPay/app/src/main/res/drawable/ic_round_account_circle.xml" value="0.133" />
         <entry key="..\:/Users/welly/StudioProjects/PicPay/app/src/main/res/layout/activity_main.xml" value="0.26875" />
+        <entry key="..\:/Users/welly/StudioProjects/PicPay/app/src/main/res/layout/fragment_home.xml" value="0.26875" />
       </map>
     </option>
   </component>

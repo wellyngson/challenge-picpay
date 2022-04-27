@@ -2,4 +2,6 @@
     <string name="app_name">PicPay</string>
     <string name="title">Contatos</string>
     <string name="error">Ocorreu um erro. Tente novamente.</string>
+    <string name="reload">Recarregar</string>
+    <string name="there_was_a_problem">Ocorreu um problema. Por favor, tente novamente.</string>
 </resources>

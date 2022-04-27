@@ -1,8 +1,8 @@
 package challenge.picpay.di
 
+import challenge.picpay.data.repository.UserRepositoryImpl
 import challenge.picpay.data.repository.datasource.local.UserLocalDataSource
 import challenge.picpay.data.repository.datasource.remote.UserRemoteDataSource
-import challenge.picpay.data.repository.UserRepositoryImpl
 import challenge.picpay.data.service.PicPayService
 import dagger.Module
 import dagger.Provides
