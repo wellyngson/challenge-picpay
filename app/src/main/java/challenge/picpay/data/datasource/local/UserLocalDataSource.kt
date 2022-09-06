@@ -1,4 +1,4 @@
-package challenge.picpay.data.repository.datasource.local
+package challenge.picpay.data.datasource.local
 
 import challenge.picpay.data.model.User
 

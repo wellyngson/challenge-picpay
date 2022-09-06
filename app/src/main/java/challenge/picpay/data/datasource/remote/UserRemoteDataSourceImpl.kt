@@ -1,4 +1,4 @@
-package challenge.picpay.data.repository.datasource.remote
+package challenge.picpay.data.datasource.remote
 
 import challenge.picpay.data.model.User
 import challenge.picpay.data.service.PicPayService

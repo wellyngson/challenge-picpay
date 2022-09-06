@@ -1,13 +1,18 @@
 package challenge.picpay.data.repository
 
+import challenge.picpay.data.datasource.local.UserLocalDataSource
+import challenge.picpay.data.datasource.remote.UserRemoteDataSource
 import challenge.picpay.data.model.UserState
-import challenge.picpay.data.repository.datasource.local.UserLocalDataSource
-import challenge.picpay.data.repository.datasource.remote.UserRemoteDataSource
 import challenge.picpay.utils.CacheExtensions
 import challenge.picpay.utils.Utils
 import com.google.common.truth.Truth.assertThat
-import io.mockk.* // ktlint-disable no-wildcard-imports
+import io.mockk.MockKAnnotations
+import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.every
 import io.mockk.impl.annotations.MockK
+import io.mockk.mockkObject
+import io.mockk.spyk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
@@ -60,25 +65,26 @@ class UserRepositoryImplTest {
         }
 
     @Test
-    fun userRepositoryGetAllUsersShould_return_UserStateLoaded_when_GetListUsersInAPI() = runTest(testDispatcher) {
-        // prepare
-        val userRepository = setupUserRepository()
-        val users = Utils.generateListUser()
-        val userStateLoaded = UserState.Loaded(users)
+    fun userRepositoryGetAllUsersShould_return_UserStateLoaded_when_GetListUsersInAPI() =
+        runTest(testDispatcher) {
+            // prepare
+            val userRepository = setupUserRepository()
+            val users = Utils.generateListUser()
+            val userStateLoaded = UserState.Loaded(users)
 
-        // when
-        mockkObject(CacheExtensions)
-        every { CacheExtensions.shouldGetDataInCache() } returns false
-        coEvery {
-            userRemoteDataSource.getUsersRemoteDataSource()
-        } returns users
-        coEvery {
-            userLocalDataSource.getUsersLocalDataSource()
-        } returns users
+            // when
+            mockkObject(CacheExtensions)
+            every { CacheExtensions.shouldGetDataInCache() } returns false
+            coEvery {
+                userRemoteDataSource.getUsersRemoteDataSource()
+            } returns users
+            coEvery {
+                userLocalDataSource.getUsersLocalDataSource()
+            } returns users
 
-        // then
-        assertThat(userRepository.getAllUser()).isEqualTo(userStateLoaded)
-    }
+            // then
+            assertThat(userRepository.getAllUser()).isEqualTo(userStateLoaded)
+        }
 
     @Test
     fun userRepositoryGetAllUsersShould_return_UserStateLoaded_when_GetListUsersInCache() =

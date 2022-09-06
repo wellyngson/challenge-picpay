@@ -1,9 +1,9 @@
 package challenge.picpay.data.repository
 
+import challenge.picpay.data.datasource.local.UserLocalDataSource
+import challenge.picpay.data.datasource.remote.UserRemoteDataSource
 import challenge.picpay.data.model.User
 import challenge.picpay.data.model.UserState
-import challenge.picpay.data.repository.datasource.local.UserLocalDataSource
-import challenge.picpay.data.repository.datasource.remote.UserRemoteDataSource
 import challenge.picpay.di.IoDispatcher
 import challenge.picpay.utils.CacheExtensions.Companion.shouldGetDataInCache
 import kotlinx.coroutines.CoroutineDispatcher
@@ -13,7 +13,7 @@ import javax.inject.Inject
 class UserRepositoryImpl @Inject constructor(
     private val userRemoteDataSource: UserRemoteDataSource,
     private val userLocalDataSource: UserLocalDataSource,
-    @IoDispatcher private val dispatcher: CoroutineDispatcher,
+    @IoDispatcher private val dispatcher: CoroutineDispatcher
 ) : UserRepository {
 
     override suspend fun getAllUser(): UserState = withContext(dispatcher) {

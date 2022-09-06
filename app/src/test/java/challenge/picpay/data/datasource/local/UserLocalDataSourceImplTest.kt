@@ -1,4 +1,4 @@
-package challenge.picpay.data.repository.datasource.local
+package challenge.picpay.data.datasource.local
 
 import challenge.picpay.data.dao.UserDao
 import challenge.picpay.utils.Utils
