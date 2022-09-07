@@ -1,8 +1,9 @@
 package challenge.picpay.data.datasource.remote
 
-import challenge.picpay.data.model.User
+import challenge.picpay.domain.model.User
+import kotlinx.coroutines.flow.Flow
 
 interface UserRemoteDataSource {
 
-    suspend fun getUsersRemoteDataSource(): List<User>
+    fun getUsersRemoteDataSource(): Flow<List<User>>
 }

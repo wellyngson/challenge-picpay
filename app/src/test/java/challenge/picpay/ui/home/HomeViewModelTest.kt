@@ -1,8 +1,8 @@
 package challenge.picpay.ui.home
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import challenge.picpay.data.model.UserState
 import challenge.picpay.data.repository.UserRepository
+import challenge.picpay.ui.model.ViewAction
 import challenge.picpay.utils.Utils
 import com.google.common.truth.Truth.assertThat
 import io.mockk.MockKAnnotations
@@ -11,7 +11,7 @@ import io.mockk.coVerify
 import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.* // ktlint-disable no-wildcard-imports
+import kotlinx.coroutines.test.*
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -44,7 +44,7 @@ class HomeViewModelTest {
             // prepare
             val viewModel = setupHomeViewModel()
             val listUser = Utils.generateListUser()
-            val userStateSuccess = UserState.Loaded(listUser)
+            val userStateSuccess = ViewAction.UsersLoaded(listUser)
 
             // when
             coEvery { userRepository.getAllUser() } returns userStateSuccess
@@ -64,14 +64,14 @@ class HomeViewModelTest {
             // prepare
             val viewModel = setupHomeViewModel()
             val listUsers = Utils.generateListUser()
-            val usersLoaded = UserState.Loaded(listUsers)
+            val usersLoaded = ViewAction.UsersLoaded(listUsers)
 
             // when
             coEvery { userRepository.getAllUser() } returns usersLoaded
             viewModel.getUsers()
 
             // then
-            assertThat(viewModel.users.value).isEqualTo(usersLoaded)
+            assertThat(viewModel.viewAction.value).isEqualTo(usersLoaded)
 
             Dispatchers.resetMain()
         }
@@ -85,14 +85,14 @@ class HomeViewModelTest {
             val viewModel = setupHomeViewModel()
             val exception = Exception()
             val listUsers = Utils.generateListUser()
-            val usersFailed = UserState.Failed(listUsers, exception)
+            val usersFailed = ViewAction.Failed(listUsers, exception)
 
             // when
             coEvery { userRepository.getAllUser() } returns usersFailed
             viewModel.getUsers()
 
             // then
-            assertThat(viewModel.users.value).isEqualTo(usersFailed)
+            assertThat(viewModel.viewAction.value).isEqualTo(usersFailed)
 
             Dispatchers.resetMain()
         }

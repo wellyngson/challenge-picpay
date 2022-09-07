@@ -1,23 +1,24 @@
 package challenge.picpay.data.datasource.local
 
 import challenge.picpay.data.dao.UserDao
-import challenge.picpay.data.model.User
-import challenge.picpay.utils.toUser
-import challenge.picpay.utils.toUserDto
-import javax.inject.Inject
+import challenge.picpay.data.mapper.MapperUserDtoToUser
+import challenge.picpay.data.mapper.MapperUserToUserDto
+import challenge.picpay.domain.model.User
 
-class UserLocalDataSourceImpl @Inject constructor(
-    private val userDao: UserDao
+class UserLocalDataSourceImpl(
+    private val dao: UserDao
 ) : UserLocalDataSource {
 
     override fun getUsersLocalDataSource(): List<User> =
-        userDao.getUsers().map { it.toUser() }
+        dao.getUsers().map {
+            MapperUserDtoToUser().map(it)
+        }
 
     override fun addUserLocalDataSource(user: User) {
-        userDao.addUserDto(user.toUserDto())
+        dao.addUserDto(MapperUserToUserDto().map(user))
     }
 
     override fun updateUserLocalDataSource(user: User) {
-        userDao.update(user.toUserDto())
+        dao.update(MapperUserToUserDto().map(user))
     }
 }

@@ -1,7 +1,7 @@
 package challenge.picpay.utils
 
-import challenge.picpay.data.model.User
 import challenge.picpay.data.model.UserDto
+import challenge.picpay.domain.model.User
 import io.github.serpro69.kfaker.faker
 
 object Utils {
@@ -23,7 +23,10 @@ object Utils {
         img: String = faker.random.nextString()
     ): UserDto =
         UserDto(
-            id = id, name = name, username = username, img = img
+            id = id,
+            name = name,
+            username = username,
+            img = img
         )
 
     fun generateListUser(

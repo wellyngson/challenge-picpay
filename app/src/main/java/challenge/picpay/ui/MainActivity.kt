@@ -5,9 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.commit
 import challenge.picpay.databinding.ActivityMainBinding
 import challenge.picpay.ui.home.HomeFragment
-import dagger.hilt.android.AndroidEntryPoint
 
-@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     private lateinit var viewBinding: ActivityMainBinding
@@ -22,7 +20,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun goToHome() {
         supportFragmentManager.commit(true) {
-            replace(viewBinding.container.id, HomeFragment.newInstance(), HomeFragment.TAG)
+            replace(viewBinding.container.id, HomeFragment.newInstance(), HomeFragment::class.java.name)
         }
     }
 }

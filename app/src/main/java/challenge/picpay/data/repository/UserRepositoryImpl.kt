@@ -2,46 +2,46 @@ package challenge.picpay.data.repository
 
 import challenge.picpay.data.datasource.local.UserLocalDataSource
 import challenge.picpay.data.datasource.remote.UserRemoteDataSource
-import challenge.picpay.data.model.User
-import challenge.picpay.data.model.UserState
-import challenge.picpay.di.IoDispatcher
+import challenge.picpay.domain.model.User
 import challenge.picpay.utils.CacheExtensions.Companion.shouldGetDataInCache
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.withContext
-import javax.inject.Inject
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 
-class UserRepositoryImpl @Inject constructor(
-    private val userRemoteDataSource: UserRemoteDataSource,
-    private val userLocalDataSource: UserLocalDataSource,
-    @IoDispatcher private val dispatcher: CoroutineDispatcher
+class UserRepositoryImpl(
+    private val remoteDataSource: UserRemoteDataSource,
+    private val localDataSource: UserLocalDataSource,
+    private val dispatcher: CoroutineDispatcher
 ) : UserRepository {
 
-    override suspend fun getAllUser(): UserState = withContext(dispatcher) {
-        try {
-            if (shouldGetDataInCache() && getListUserInLocalDataSource().isNotEmpty()) {
-                UserState.Loaded(getListUserInLocalDataSource())
-            } else {
-                val response = userRemoteDataSource.getUsersRemoteDataSource()
+    override fun getAllUser(): Flow<List<User>> = flow {
+        if (shouldGetDataInCache() && getListUserInLocalDataSource().isNotEmpty()) {
+            emit(getListUserInLocalDataSource())
+        } else {
+            remoteDataSource.getUsersRemoteDataSource().collect {
+                addOrUpdateInDataBase(it)
 
-                response.map {
-                    addOrUpdateUsersInLocalDataSource(it)
-                }
-
-                UserState.Loaded(response)
+                emit(it)
             }
-        } catch (e: Exception) {
-            UserState.Failed(getListUserInLocalDataSource(), e)
+        }
+    }.flowOn(dispatcher)
+
+    private fun addOrUpdateInDataBase(listUser: List<User>) {
+        listUser.forEach {
+            addOrUpdateUsersInLocalDataSource(it)
         }
     }
 
     private fun addOrUpdateUsersInLocalDataSource(user: User) {
         if (getListUserInLocalDataSource().contains(user)) {
-            userLocalDataSource.updateUserLocalDataSource(user)
+            localDataSource.updateUserLocalDataSource(user)
         } else {
-            userLocalDataSource.addUserLocalDataSource(user)
+            localDataSource.addUserLocalDataSource(user)
         }
     }
 
-    private fun getListUserInLocalDataSource(): List<User> =
-        userLocalDataSource.getUsersLocalDataSource()
+    private fun getListUserInLocalDataSource(): List<User> {
+        return localDataSource.getUsersLocalDataSource()
+    }
 }

@@ -1,13 +1,21 @@
 package challenge.picpay.data.datasource.remote
 
-import challenge.picpay.data.model.User
+import challenge.picpay.data.mapper.MapperUserResponseToUser
 import challenge.picpay.data.service.PicPayService
-import javax.inject.Inject
+import challenge.picpay.domain.model.User
+import challenge.picpay.utils.mapToCustomError
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 
-class UserRemoteDataSourceImpl @Inject constructor(
-    private val picPayService: PicPayService
+class UserRemoteDataSourceImpl(
+    private val service: PicPayService
 ) : UserRemoteDataSource {
 
-    override suspend fun getUsersRemoteDataSource(): List<User> =
-        picPayService.getUsers()
+    override fun getUsersRemoteDataSource(): Flow<List<User>> = flow {
+        emit(
+            service.getUsers().map {
+                MapperUserResponseToUser().map(it)
+            }
+        )
+    }.mapToCustomError()
 }

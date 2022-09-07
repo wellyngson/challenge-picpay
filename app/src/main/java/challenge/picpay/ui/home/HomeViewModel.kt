@@ -4,34 +4,63 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import challenge.picpay.data.model.UserState
-import challenge.picpay.data.repository.UserRepository
-import challenge.picpay.di.MainDispatcher
-import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineDispatcher
+import challenge.picpay.domain.model.User
+import challenge.picpay.domain.usecase.GetUsersUseCase
+import challenge.picpay.ui.model.ViewAction
+import challenge.picpay.utils.Error
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-class HomeViewModel @Inject constructor(
-    private val userRepository: UserRepository,
-    @MainDispatcher private val dispatcher: CoroutineDispatcher,
+class HomeViewModel(
+    private val getUsersUseCase: GetUsersUseCase
 ) : ViewModel() {
 
-    private val _users = MutableLiveData<UserState>(UserState.Initial)
-    val users: LiveData<UserState> = _users
+    private val _viewAction = MutableLiveData<ViewAction>(ViewAction.Initial)
+    val viewAction: LiveData<ViewAction> = _viewAction
 
     init {
         getUsers()
     }
 
-    fun getUsers() {
-        viewModelScope.launch(dispatcher) {
-            _users.postValue(UserState.Loading)
+    fun init() {
+        getUsers()
+    }
 
-            val response = userRepository.getAllUser()
-
-            _users.postValue(response)
+    private fun getUsers() {
+        viewModelScope.launch {
+            getUsersUseCase.execute()
+                .onStart { handleLoading() }
+                .catch {
+                    it.showConnectionErrorOrThrowable {
+                        handleGenericError()
+                    }
+                }
+                .collect(::handleGetUsers)
         }
+    }
+
+    private fun handleGetUsers(users: List<User>) {
+        _viewAction.value = ViewAction.UsersLoaded(users)
+    }
+
+    private fun handleLoading() {
+        _viewAction.value = ViewAction.Loading
+    }
+
+    private fun Throwable.showConnectionErrorOrThrowable(errorCallback: () -> Unit) {
+        if (this is Error.NoConnectionError) {
+            showNoConnectionError()
+        } else {
+            errorCallback()
+        }
+    }
+
+    private fun showNoConnectionError() {
+        _viewAction.value = ViewAction.NoConnectionError
+    }
+
+    private fun handleGenericError() {
+        _viewAction.value = ViewAction.GenericError
     }
 }

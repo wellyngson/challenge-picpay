@@ -1,6 +1,10 @@
 package challenge.picpay.data.dao
 
-import androidx.room.* // ktlint-disable no-wildcard-imports
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import androidx.room.Update
 import challenge.picpay.data.model.UserDto
 
 @Dao

@@ -6,17 +6,17 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
-import challenge.picpay.data.model.User
-import challenge.picpay.data.model.UserState
+import challenge.picpay.R
 import challenge.picpay.databinding.FragmentHomeBinding
-import dagger.hilt.android.AndroidEntryPoint
+import challenge.picpay.domain.model.User
+import challenge.picpay.ui.model.ViewAction
+import challenge.picpay.utils.createDialog
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
-@AndroidEntryPoint
 class HomeFragment : Fragment() {
 
     private lateinit var viewBinding: FragmentHomeBinding
-    private val viewModel: HomeViewModel by viewModels()
+    private val viewModel: HomeViewModel by viewModel()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -39,69 +39,78 @@ class HomeFragment : Fragment() {
         viewBinding.recyclerView.adapter = UserListAdapter()
     }
 
+    private fun updateAdapter(users: List<User>) {
+        (viewBinding.recyclerView.adapter as? UserListAdapter)?.submitList(users)
+    }
+
     private fun setupUsersObserver() {
-        viewModel.users.observe(viewLifecycleOwner) {
+        viewModel.viewAction.observe(viewLifecycleOwner) {
             when (it) {
-                is UserState.Initial -> {
+                is ViewAction.Initial -> {
                 }
-                is UserState.Loading -> {
-                    setupUserStateLoading()
+                is ViewAction.Loading -> {
+                    setupLoading()
                 }
-                is UserState.Loaded -> {
-                    setupUserStateLoaded(it)
+                is ViewAction.UsersLoaded -> {
+                    setupUsersLoaded(it.users)
                 }
-                is UserState.Failed -> {
-                    setupUserStateFailed(it.users)
+                is ViewAction.NoConnectionError -> {
+                    showNoConnectionError()
+                }
+                is ViewAction.GenericError -> {
+                    showGenericError()
                 }
             }
         }
     }
 
-    private fun setupUserStateLoading() {
-        errorContainerVisibility(false)
-        showLoading()
-    }
-
-    private fun setupUserStateLoaded(it: UserState.Loaded) {
-        dismissLoading()
-        updateAdapter(it.users)
-    }
-
-    private fun setupUserStateFailed(users: List<User>) {
-        errorContainerVisibility(true)
-        dismissLoading()
-
-        if (users.isNotEmpty()) {
-            errorContainerVisibility(false)
-            updateAdapter(users)
-        }
-    }
-
     private fun setupTryAgain() {
         viewBinding.tryAgain.setOnClickListener {
-            viewModel.getUsers()
+            viewModel.init()
         }
     }
 
-    private fun dismissLoading() {
-        viewBinding.loading.isVisible = false
+    private fun setupLoading() {
+        handleLoading(true)
+        handleUsers(false)
     }
 
-    private fun errorContainerVisibility(value: Boolean) {
-        viewBinding.errorContainer.isVisible = value
+    private fun setupUsersLoaded(users: List<User>) {
+        updateAdapter(users)
+        handleLoading(false)
+        handleUsers(true)
     }
 
-    private fun showLoading() {
-        viewBinding.loading.isVisible = true
+    private fun handleLoading(value: Boolean) {
+        viewBinding.loading.isVisible = value
     }
 
-    private fun updateAdapter(users: List<User>) {
-        (viewBinding.recyclerView.adapter as? UserListAdapter)?.submitList(users)
+    private fun handleUsers(value: Boolean) {
+        with(viewBinding) {
+            recyclerView.isVisible = value
+            tryAgain.isVisible = value
+        }
+    }
+
+    private fun showNoConnectionError() {
+        handleLoading(false)
+        showErrorDialog(getString(R.string.error_no_connection_title))
+    }
+
+    private fun showGenericError() {
+        handleLoading(false)
+        showErrorDialog(getString(R.string.error_generic_title))
+    }
+
+    private fun showErrorDialog(message: String) {
+        context?.createDialog {
+            setMessage(message)
+            setCancelable(false)
+            setPositiveButton(android.R.string.ok) { _, _ -> viewModel.init() }
+        }?.show()
     }
 
     companion object {
-        const val TAG = "com.picpay.desafio.android.ui.home"
-
         fun newInstance() = HomeFragment()
     }
 }

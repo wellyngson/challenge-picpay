@@ -2,7 +2,7 @@ package challenge.picpay.data.repository
 
 import challenge.picpay.data.datasource.local.UserLocalDataSource
 import challenge.picpay.data.datasource.remote.UserRemoteDataSource
-import challenge.picpay.data.model.UserState
+import challenge.picpay.ui.model.ViewAction
 import challenge.picpay.utils.CacheExtensions
 import challenge.picpay.utils.Utils
 import com.google.common.truth.Truth.assertThat
@@ -70,7 +70,7 @@ class UserRepositoryImplTest {
             // prepare
             val userRepository = setupUserRepository()
             val users = Utils.generateListUser()
-            val userStateLoaded = UserState.Loaded(users)
+            val userStateLoaded = ViewAction.UsersLoaded(users)
 
             // when
             mockkObject(CacheExtensions)
@@ -101,7 +101,7 @@ class UserRepositoryImplTest {
             } returns users
 
             // then
-            assertThat(userRepository.getAllUser()).isInstanceOf(UserState.Loaded::class.java)
+            assertThat(userRepository.getAllUser()).isInstanceOf(ViewAction.UsersLoaded::class.java)
         }
 
     @Test
@@ -122,6 +122,6 @@ class UserRepositoryImplTest {
             } returns users
 
             // then
-            assertThat(userRepository.getAllUser()).isInstanceOf(UserState.Failed::class.java)
+            assertThat(userRepository.getAllUser()).isInstanceOf(ViewAction.Failed::class.java)
         }
 }

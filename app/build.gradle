@@ -2,7 +2,6 @@ plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-kapt'
-    id 'dagger.hilt.android.plugin'
 }
 
 android {
@@ -19,9 +18,16 @@ android {
     }
 
     buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        buildTypes {
+            debug {
+                buildConfigField("String", 'BASE_URL', '"https://609a908e0f5a13001721b74e.mockapi.io/picpay/api/"')
+            }
+
+            release {
+                minifyEnabled false
+                proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+                buildConfigField("String", 'BASE_URL', '"https://609a908e0f5a13001721b74e.mockapi.io/picpay/api/"')
+            }
         }
     }
     compileOptions {
@@ -39,8 +45,8 @@ android {
 dependencies {
 
     // Default
-    implementation 'androidx.core:core-ktx:1.7.0'
-    implementation 'androidx.appcompat:appcompat:1.4.1'
+    implementation 'androidx.core:core-ktx:1.8.0'
+    implementation 'androidx.appcompat:appcompat:1.5.0'
     implementation 'com.google.android.material:material:1.6.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
 
@@ -57,27 +63,30 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
 
     // Room
-    implementation "androidx.room:room-ktx:2.4.2"
-    androidTestImplementation "androidx.room:room-testing:2.4.2"
-    kapt "androidx.room:room-compiler:2.4.2"
+    implementation("androidx.room:room-runtime:2.4.3")
+    annotationProcessor("androidx.room:room-compiler:2.4.3")
+
+    // To use Kotlin annotation processing tool (kapt)
+    kapt("androidx.room:room-compiler:2.4.3")
+
+    // optional - Kotlin Extensions and Coroutines support for Room
+    implementation("androidx.room:room-ktx:2.4.3")
+    // optional - RxJava2 support for Room
+    implementation("androidx.room:room-rxjava2:2.4.3")
+    // optional - RxJava3 support for Room
+    implementation("androidx.room:room-rxjava3:2.4.3")
+    // optional - Guava support for Room, including Optional and ListenableFuture
+    implementation("androidx.room:room-guava:2.4.3")
+    // optional - Test helpers
+    testImplementation("androidx.room:room-testing:2.4.3")
 
     // DateTime
     implementation "org.jetbrains.kotlinx:kotlinx-datetime:0.2.1"
 
-    // Hilt
-    implementation "com.google.dagger:hilt-android:2.40.5"
-    implementation "androidx.work:work-runtime-ktx:2.7.1"
-    implementation 'androidx.hilt:hilt-work:1.0.0'
-    kapt "com.google.dagger:hilt-compiler:2.40.5"
-    kapt 'androidx.hilt:hilt-compiler:1.0.0'
-    kaptTest "com.google.dagger:hilt-android-compiler:2.38.1"
-    kaptAndroidTest "com.google.dagger:hilt-android-compiler:2.38.1"
-    androidTestImplementation "com.google.dagger:hilt-android-testing:2.40.5"
-
     // Retrofit
     implementation "com.squareup.retrofit2:retrofit:2.9.0"
     implementation "com.squareup.retrofit2:converter-gson:2.9.0"
-    implementation "com.squareup.okhttp3:logging-interceptor:4.9.3"
+    implementation "com.squareup.okhttp3:logging-interceptor:4.10.0"
     implementation 'com.google.code.gson:gson:2.9.0'
 
     // Picasso
@@ -91,8 +100,14 @@ dependencies {
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.1'
     testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0'
 
+    // Koin
+    implementation "io.insert-koin:koin-core:2.2.3"
+    implementation "io.insert-koin:koin-android:3.2.0"
+    testImplementation "io.insert-koin:koin-test:2.2.3"
+    testImplementation "io.insert-koin:koin-test-junit4:3.2.0"
+
     // Mockk
-    testImplementation "io.mockk:mockk:1.12.2"
+    testImplementation "io.mockk:mockk:1.12.4"
 
     // Truth
     testImplementation 'androidx.test.ext:truth:1.4.0'

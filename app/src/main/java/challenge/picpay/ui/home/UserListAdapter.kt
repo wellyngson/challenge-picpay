@@ -7,8 +7,8 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import challenge.picpay.R
-import challenge.picpay.data.model.User
 import challenge.picpay.databinding.ListItemUserBinding
+import challenge.picpay.domain.model.User
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 

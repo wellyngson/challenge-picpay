@@ -1,8 +1,9 @@
 package challenge.picpay.data.repository
 
-import challenge.picpay.data.model.UserState
+import challenge.picpay.domain.model.User
+import kotlinx.coroutines.flow.Flow
 
 interface UserRepository {
 
-    suspend fun getAllUser(): UserState
+    fun getAllUser(): Flow<List<User>>
 }

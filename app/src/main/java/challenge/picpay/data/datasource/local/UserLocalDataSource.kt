@@ -1,6 +1,6 @@
 package challenge.picpay.data.datasource.local
 
-import challenge.picpay.data.model.User
+import challenge.picpay.domain.model.User
 
 interface UserLocalDataSource {
     fun getUsersLocalDataSource(): List<User>
